@@ -1,16 +1,16 @@
 ansible-playbook/
 ├── roles/
-│   ├── setup-mongodb/
+│   ├── mongodb/
 │   │   ├── tasks/
 │   │   │   └── main.yml
 │   │   └── vars/
 │   │       └── main.yml
-│   ├── backend-deployment/
+│   ├── client/
 │   │   ├── tasks/
 │   │   │   └── main.yml
 │   │   └── vars/
 │   │       └── main.yml
-│   └── frontend-deployment/
+│   └── backend/
 │       ├── tasks/
 │       │   └── main.yml
 │       └── vars/

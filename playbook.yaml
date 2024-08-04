@@ -1,10 +1,10 @@
----
-- name: Setup e-commerce application
+- name: Set up the e-commerce application
   hosts: all
   become: yes
+
   vars_files:
-    - vars/main.yml
+    - vars.yml
+
   roles:
-    - { role: setup_docker }
-    - { role: clone_repo }
-    - { role: setup_containers }
+    - docker
+    - application

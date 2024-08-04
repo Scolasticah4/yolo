@@ -10,39 +10,44 @@ const productRoute = require('./routes/api/productRoute');
 let mongodb_url = 'mongodb://mongo/';
 let dbName = 'yolomy';
 
-// define a url to connect to the database
-const MONGODB_URI = process.env.MONGODB_URI || mongodb_url + dbName
-mongoose.connect(MONGODB_URI,{useNewUrlParser: true, useUnifiedTopology: true  } )
+// Define a URL to connect to the database
+const MONGODB_URI = process.env.MONGODB_URI || mongodb_url + dbName;
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 let db = mongoose.connection;
 
 // Check Connection
-db.once('open', ()=>{
-    console.log('Database connected successfully')
-})
+db.once('open', () => {
+  console.log('Database connected successfully');
+});
 
 // Check for DB Errors
-db.on('error', (error)=>{
-    console.log(error);
-})
+db.on('error', (error) => {
+  console.log(error);
+});
 
-// Initializing express
-const app = express()
+// Initialize Express
+const app = express();
 
 // Body parser middleware
-app.use(express.json())
+app.use(express.json());
 
-// 
-app.use(upload.array()); 
+// Multer for handling file uploads
+app.use(upload.array());
 
-// Cors 
+// CORS middleware
 app.use(cors());
 
+// Root route
+app.get('/', (req, res) => {
+  res.send('Backend is up and running!');
+});
+
 // Use Route
-app.use('/api/products', productRoute)
+app.use('/api/products', productRoute);
 
 // Define the PORT
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server listening on port ${PORT}`);
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
 });
