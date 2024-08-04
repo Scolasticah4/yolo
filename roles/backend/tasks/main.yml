@@ -1,0 +1,20 @@
+- name: Clone the repository
+  git:
+    repo: 'https://github.com/Scolasticah4/yolo'
+    dest: /opt/app
+    version: main
+
+- name: Install Node.js and npm
+  apt:
+    name:
+      - nodejs
+      - npm
+    state: present
+
+- name: Install backend dependencies
+  npm:
+    path: /opt/app/backend
+    state: present
+
+- name: Start backend server
+  command: nohup npm start --prefix /opt/app/backend > /opt/app/backend/logs.log 2>&1 &
