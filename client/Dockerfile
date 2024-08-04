@@ -1,4 +1,4 @@
-# Use an official Node runtime as a parent image
+# Use an official Node runtime as a parent image for the build stage
 FROM node:14-slim AS build
 
 # Set the working directory in the container
@@ -13,16 +13,23 @@ RUN npm install
 # Copy the rest of the application code to the container
 COPY . .
 
-FROM alpine:3.16.7
+# Build the React app
+RUN npm run build
 
+# Use a smaller base image for the runtime stage
+FROM node:14-slim
+
+# Set the working directory in the container
 WORKDIR /app
 
-RUN apk update && apk add npm
+# Copy only the necessary files from the build stage
+COPY --from=build /usr/src/app/build /app
 
-COPY --from=build /usr/src/app /app
+# Install a lightweight HTTP server to serve the static files
+RUN npm install -g serve
 
 # Expose the port the app runs on
 EXPOSE 3000
 
-# Define the command to run your app
-CMD ["npm", "start"]
+# Define the command to run the HTTP server
+CMD ["serve", "-s", ".", "-l", "3000"]
