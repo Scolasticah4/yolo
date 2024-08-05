@@ -1,8 +1,0 @@
-- name: Deploy e-commerce application
-  hosts: all
-  become: yes
-
-  roles:
-    - mongodb
-    - backend
-    - frontend

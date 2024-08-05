@@ -1,0 +1,3 @@
+---
+docker_version: "27.1.1"
+yolo_repo: "https://github.com/Scolasticah4/yolo"
