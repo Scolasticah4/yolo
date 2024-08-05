@@ -1,0 +1,10 @@
+---
+- name: Deploy e-commerce application
+  hosts: localhost
+  become: true
+  vars_files:
+    - vars/main.yml
+  roles:
+    - mongodb
+    - backend
+    - frontend

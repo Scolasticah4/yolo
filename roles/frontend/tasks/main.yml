@@ -1,0 +1,41 @@
+---
+- name: Clone frontend repo
+  git:
+    repo: "{{ yolo_repo }}"
+    dest: /var/www/frontend
+  become: true
+
+- name: Copy Dockerfile for frontend
+  copy:
+    dest: /var/www/frontend/Dockerfile
+    content: |
+      # Dockerfile content for frontend
+      FROM node:14
+      WORKDIR /app
+      COPY package*.json ./
+      RUN npm install
+      COPY . .
+      EXPOSE 3000
+      CMD ["npm", "start"]
+  become: true
+
+- name: Copy Docker Compose file for frontend
+  copy:
+    dest: /var/www/frontend/docker-compose.yml
+    content: |
+      version: '3'
+      services:
+        frontend:
+          build:
+            context: /var/www/frontend
+          ports:
+            - "3000:3000"
+          depends_on:
+            - backend
+  become: true
+
+- name: Start Docker Compose for frontend
+  command: docker-compose up -d
+  args:
+    chdir: /var/www/frontend
+  become: true
