@@ -1,10 +1,10 @@
----
-- name: Deploy e-commerce application
-  hosts: localhost
-  become: true
-  vars_files:
-    - vars/main.yml
-  roles:
-    - mongodb
-    - backend
-    - frontend
+- hosts: localhost
+  become: yes
+  become_method: sudo
+  tasks:
+    - include_role:
+        name: mongodb
+    - include_role:
+        name: backend
+    - include_role:
+        name: client

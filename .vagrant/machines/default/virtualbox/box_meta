@@ -1,1 +1,1 @@
-{"name":"ubuntu/bionic64","version":"20230607.0.1","provider":"virtualbox","directory":"boxes/ubuntu-VAGRANTSLASH-bionic64/20230607.0.1/virtualbox"}
+{"name":"geerlingguy/ubuntu2004","version":"1.0.4","provider":"virtualbox","directory":"boxes/geerlingguy-VAGRANTSLASH-ubuntu2004/1.0.4/virtualbox"}

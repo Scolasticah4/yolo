@@ -13,13 +13,12 @@ RUN npm install
 # Copy the rest of the application code to the container
 COPY . .
 
-#Add multi-stage build
-FROM alpine:3.16.7
+# Add multi-stage build
+FROM node:14
 
 WORKDIR /app
 
-RUN apk update && apk add --update nodejs
-
+# Copy the application code from the build stage
 COPY --from=build /usr/src/app /app
 
 # Expose the port the app runs on

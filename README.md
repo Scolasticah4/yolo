@@ -1,54 +1,44 @@
-# Overview
-This project involved the containerization and deployment of a full-stack yolo application using Docker.
+# 1. Install the required software
+# Install Docker
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
 
+# Install Vagrant
+wget https://releases.hashicorp.com/vagrant/2.3.4/vagrant_2.3.4_x86_64.deb
+sudo apt install ./vagrant_2.3.4_x86_64.deb
 
-# Requirements
-Install the docker engine here:
-- [Docker](https://docs.docker.com/engine/install/) 
+# Install VirtualBox
+sudo apt-get install virtualbox
 
-## How to launch the application 
-### Method 1 (faster)
-- NOTE: This method does not require cloning of this repository
+# Install Ansible
+sudo apt-get update
+sudo apt-get install software-properties-common
+sudo apt-add-repository --yes --update ppa:ansible/ansible
+sudo apt-get install ansible
 
-- Navigate to the launch_app folder and copy the contents of the [docker-compose.yaml] in the root of the project
-- On your local machine, navigate to your desired directory and create
-  a docker-compose.yaml file, paste the contents into it and save
+# 2. Clone the repository and navigate to the client and backend folders
+git clone https://github.com/Scolasticah4/yolo
+cd yolo/client
+npm install
+npm start
 
-  `touch docker-compose.yaml`
+cd ../backend
+npm install
+npm start
 
-- Launch the application using docker compose up
+# 3. Set up a Vagrant environment and run the Ansible playbook
+cd ..
+vagrant init
+# Edit the Vagrantfile to choose the base box, for example:
+# config.vm.box = "ubuntu/focal64"
+vagrant up
+ansible-playbook playbook.yaml
 
-  `docker compose up`
+# Access the application
+# Open your web browser and go to http://localhost:3000/
 
-### Method 2
-- NOTE: This requires cloning of this whole repository
+# Stop the application
+# Press Ctrl+C in the terminal
 
-- Clone this repository to your local machine
-
-  `git clone https://github.com/Scolasticah4/yolo`
-
-- Navigate to the root directory of your cloned repository
-
-  `cd yolo`
-
-- Launch the application using the docker compose command
-
-  `docker compose up`
-
-## Access the application on your browser using the following URL
- `http://localhost:3000/`
-
-## How to stop the application
-- Navigate back to your terminal and press "ctrl+c" 
-
-## How to terminate the application completely
- `docker compose down`
-
-## The Docker images used in this application are sourced from this repository
-
-https://hub.docker.com/repositories/scolasticah
-
-![Alt text](image.png)
-
-## How to run the app
-Use vagrant up --provison command
+# Terminate the application
+vagrant destroy

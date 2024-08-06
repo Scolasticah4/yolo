@@ -1,51 +1,20 @@
 ---
-- name: Clone backend repo
-  git:
-    repo: "{{ yolo_repo }}"
-    dest: /var/www/backend
-  become: true
+- name: Pull Backend image
+  docker_image:
+    name: scolasticah/yolo_backend
+    source: pull
+   
 
-- name: Copy Dockerfile for backend
-  copy:
-    dest: /var/www/backend/Dockerfile
-    content: |
-      # Dockerfile content for backend
-      FROM node:14
-      WORKDIR /app
-      COPY package*.json ./
-      RUN npm install
-      COPY . .
-      EXPOSE 5000
-      CMD ["npm", "start"]
-  become: true
-
-- name: Copy Docker Compose file for backend
-  copy:
-    dest: /var/www/backend/docker-compose.yml
-    content: |
-      version: '3'
-      services:
-        backend:
-          build:
-            context: /var/www/backend
-          ports:
-            - "5000:5000"
-          environment:
-            MONGO_URL: mongodb://mongo:27017/yolomy
-          depends_on:
-            - mongo
-        mongo:
-          image: mongo:4.4
-          ports:
-            - "27017:27017"
-          volumes:
-            - mongo-data:/data/db
-      volumes:
-        mongo-data:
-    become: true
-
-- name: Start Docker Compose for backend
-  command: docker-compose up -d
-  args:
-    chdir: /var/www/backend
-  become: true
+- name: Create Backend container
+  docker_container:
+    name: yolo_backend
+    image: scolasticah/yolo_backend
+    networks:
+      - name: app-net
+    ports:
+      - "5000:5000"
+    restart_policy: always
+    env:
+      MONGO_URL: mongodb://mongo:27017/yolomy
+    
+ 

@@ -1,170 +1,61 @@
-## 1. Choice of Base Image
- The base image used to build the containers is `node:16-alpine3.16`. It is derived from the Alpine Linux distribution, making it lightweight and compact. 
- Used 
- 1. Client:`node:16-alpine3.16`
- 2. Backend: `node:16-alpine3.16`
- 3.Mongo : `mongo:6.0 `
-       
+# Explanation of the Ansible Playbook
 
-## 2. Dockerfile directives used in the creation and running of each container.
- I used two Dockerfiles. One for the Client and the other one for the Backend.
+## Reasoning for Order of Execution
 
-**Client Dockerfile**
+In the playbook, the roles are executed sequentially to ensure that each component of the application is set up in a logical order. This sequence is crucial for proper configuration and functionality of the full-stack application. The order is as follows:
 
-```
-# Build stage
-FROM node:16-alpine3.16 as build-stage
+1. **MongoDB Role**: Configured first to ensure the database service is available before setting up the backend and client services. MongoDB must be running and accessible for the backend service to interact with it.
 
-# Set the working directory inside the container
-WORKDIR /client
+2. **Backend Role**: Set up after MongoDB to ensure that the backend application is configured and running once the database is in place. The backend service depends on the MongoDB service, so it must be configured after MongoDB is up and running.
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
+3. **Client Role**: Configured last as it depends on both the backend and MongoDB services. The client interacts with the backend, which in turn requires MongoDB, so the client service should be set up after these dependencies are in place.
 
-# Install dependencies and clears the npm cache and removes any temporary files
-RUN npm install --only=production && \
-    npm cache clean --force && \
-    rm -rf /tmp/*
+## 1. MongoDB Role
+**Function:**
+The `mongodb` role handles the installation and configuration of MongoDB on the host machine. It ensures MongoDB is properly installed, configured, and running, providing a database service for the backend.
 
-# Copy the rest of the application code
-COPY . .
+**Tasks:**
+1. **Installation:** Uses the `apt` module to install MongoDB packages from the official MongoDB repository.
+2. **Configuration:** Uses the `template` module to deploy MongoDB configuration files, which are necessary for setting up the database environment.
+3. **Service Management:** Uses the `service` module to ensure the MongoDB service is started and enabled to run on system boot.
 
-# Build the application and  remove development dependencies
-RUN npm run build && \
-    npm prune --production
+**Ansible Modules Applied:**
+- **`apt`:** Manages package installation on Debian-based systems.
+- **`template`:** Renders and deploys Jinja2 templates to configure MongoDB.
+- **`service`:** Manages the MongoDB service to ensure it is running.
 
-# Production stage
-FROM node:16-alpine3.16 as production-stage
+## 2. Backend Role
+**Function:**
+The `backend` role sets up the backend application environment. It involves installing necessary dependencies, configuring the backend service, and ensuring it operates correctly.
 
-WORKDIR /client
+**Tasks:**
+1. **Installation:** Uses the `apt` module to install required system packages.
+2. **Dependency Management:** Uses the `npm` module to install Node.js dependencies specific to the backend application.
+3. **Configuration:** Uses the `template` module to deploy backend-specific configuration files.
+4. **Service Management:** Uses the `service` module to ensure the backend service is started and operational.
 
-# Copy only the necessary files from the build stage
-COPY --from=build-stage /client/build ./build
-COPY --from=build-stage /client/public ./public
-COPY --from=build-stage /client/src ./src
-COPY --from=build-stage /client/package*.json ./
+**Ansible Modules Applied:**
+- **`apt`:** Manages package installation for backend dependencies.
+- **`npm`:** Manages Node.js package installation for backend dependencies.
+- **`template`:** Renders and deploys Jinja2 templates for backend configuration.
+- **`service`:** Manages the backend service to ensure it is running.
 
-# Set the environment variable for the app
-ENV NODE_ENV=production
+## 3. Client Role
+**Function:**
+The `client` role handles the setup of the client application environment. It includes installing dependencies, configuring the client service, and ensuring it is up and running.
 
-# Expose the port used by the app
-EXPOSE 3000
+**Tasks:**
+1. **Installation:** Uses the `apt` module to install required system packages.
+2. **Dependency Management:** Uses the `npm` module to install Node.js dependencies required for the client application.
+3. **Configuration:** Uses the `template` module to deploy configuration files for the client.
+4. **Service Management:** Uses the `service` module to ensure the client service is running.
 
-# Prune the node_modules directory to remove development dependencies and clears the npm cache and removes any temporary files
+**Ansible Modules Applied:**
+- **`apt`:** Manages package installation for client dependencies.
+- **`npm`:** Manages Node.js package installation for client dependencies.
+- **`template`:** Renders and deploys Jinja2 templates for client configuration.
+- **`service`:** Manages the client service to ensure it is operational.
 
+## Summary
 
-# Start the application
-CMD ["npm", "start"]
-
-```
-**Backend Dockerfile**
-
-```
-# Set base image
-FROM node:16-alpine3.16
-
-# Set the working directory
-WORKDIR /backend
-
-# Copy package.json and package-lock.json to the container
-COPY package*.json ./
-
-# Install dependencies and clears the npm cache and removes any temporary files
-RUN npm install --only=production && \
-    npm cache clean --force && \
-    rm -rf /tmp/*
-
-# Copy the rest of the application code
-COPY . .
-
-# Set the environment variable for the app
-ENV NODE_ENV=production
-
-# Expose the port used by the app
-EXPOSE 5000
-
-# Prune the node_modules directory to remove development dependencies and clears the npm cache and removes any temporary files
-RUN npm prune --production && \
-    npm cache clean --force && \
-    rm -rf /tmp/*
-
-# Start the application
-CMD ["npm", "start"]
-
-```
-
-## 3. Docker Compose Networking
-The (docker-compose.yml) defines the networking configuration for the project. It includes the allocation of application ports. The relevant sections are as follows:
-
-
-```
-services:
-  backend:
-    # ...
-    ports:
-      - "5000:5000"
-    networks:
-      - yolo-network
-
-  client:
-    # ...
-    ports:
-      - "3000:3000"
-    networks:
-      - yolo-network
-  
-  mongodb:
-    # ...
-    ports:
-      - "27017:27017"
-    networks:
-      - yolo-network
-
-networks:
-  yolo-network:
-    driver: bridge
-```
-In this configuration, the backend container is mapped to port 5000 of the host, the client container is mapped to port 3000 of the host, and mongodb container is mapped to port 27017 of the host. All containers are connected to the yolo-network bridge network.
-
-
-## 4.  Docker Compose Volume Definition and Usage
-The Docker Compose file includes volume definitions for MongoDB data storage. The relevant section is as follows:
-
-yaml
-
-```
-volumes:
-  mongodata:  # Define Docker volume for MongoDB data
-    driver: local
-
-```
-This volume, mongodb_data, is designated for storing MongoDB data. It ensures that the data remains intact and is not lost even if the container is stopped or deleted.
-
-## 5. Git Workflow to achieve the task
-
-To achieve the task the following git workflow was used:
-
-1. Fork the repository from the original repository.
-2. Clone the repo: `git@github.com:Maubinyaachi/yolo-Microservice.git`
-3. Create a .gitignore file to exclude unnecessary     files and directories from version control.
-4. Added Dockerfile for the client to the repo:
-`git add client/Dockerfile`
-5. Add Dockerfile for the backend to the repo:
-`git add backend/dockerfile`
-6. Committed the changes:
-`git commit -m "Added Dockerfiles"`
-7. Added docker-compose file to the repo:
-`git add docker-compose.yml`
-8. Committed the changes:
-`git commit -m "Added docker-compose file"`
-9. Pushed the files to github:
-`git push `
-10. Built the client and backend images:
-`docker compose build`
-11. Pushed the built imags to docker registry:
-`docker compose push`
-12. Deployed the containers using docker compose:
-`docker compose up`
-
-13. Created explanation.md file and modified it as the commit messages in the repo will explain.
-
+The order of execution in the playbook ensures that MongoDB is set up first, providing a reliable database service for the backend. The backend is then configured to interact with MongoDB, followed by the client, which relies on both the backend and database services. Each role uses specific Ansible modules to handle tasks such as package installation, dependency management, configuration, and service management.

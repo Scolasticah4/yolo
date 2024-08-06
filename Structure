@@ -1,18 +1,13 @@
-ansible-playbook/
+yolo/
 ├── roles/
 │   ├── mongodb/
-│   │   ├── tasks/
-│   │   │   └── main.yml
-│   │   └── vars/
+│   │   └── tasks/
 │   │       └── main.yml
-│   ├── backend-deployment/
-│   │   ├── tasks/
-│   │   │   └── main.yml
-│   │   └── vars/
+│   ├── backend/
+│   │   └── tasks/
 │   │       └── main.yml
-│   └── client-deployment/
-│       ├── tasks/
-│       │   └── main.yml
-│       └── vars/
+│   └── client/
+│       └── tasks/
 │           └── main.yml
-└── playbook.yml
+├── playbook.yml
+└── inventory

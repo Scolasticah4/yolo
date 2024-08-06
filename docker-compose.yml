@@ -1,27 +1,43 @@
 version: '3'
+
 services:
   client:
+    container_name: yolo_client
     build: ./client
     ports:
       - "3000:3000"
     depends_on:
       - backend
+    environment:
+      - REACT_APP_BACKEND_URL=http://yolo_backend:5000/api
+    networks:
+      - yolo-network
 
   backend:
+    container_name: yolo_backend
     build: ./backend
     ports:
       - "5000:5000"
     depends_on:
       - mongo
     environment:
-      MONGO_URL: mongodb://mongo:27017/yolomy
+      - MONGODB_URI=mongodb://yolo_mongodb:27017/yolomy
+    networks:
+      - yolo-network
 
   mongo:
+    container_name: yolo_mongodb
     image: mongo:4.4
     ports:
-      - "27017:27017"
+      - "27018:27017"
     volumes:
       - mongo-data:/data/db
+    networks:
+      - yolo-network
 
 volumes:
   mongo-data:
+
+networks:
+  yolo-network:
+    driver: bridge
