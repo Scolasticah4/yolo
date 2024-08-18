@@ -1,4 +1,3 @@
-# frontend-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,6 +14,6 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: scolasticah/yolo_frontend:latest
+        image: scolasticah/yolo_client:latest
         ports:
         - containerPort: 80
