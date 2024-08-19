@@ -52,3 +52,33 @@ sudo apt-add-repository --yes --update ppa:ansible/ansible
 
 # Terminate the application
 'vagrant destroy'
+
+# My Kubernetes Project
+
+## Overview
+
+This project involves deploying a Node.js application on Google Kubernetes Engine (GKE) using Docker images. The application consists of a frontend service and a backend service, both of which are deployed using Kubernetes manifests. The backend service includes a database that is deployed using StatefulSets for persistent storage.
+
+## Live Application
+
+You can access the live application at the following URL:
+
+- **Frontend Service:** [http://34.27.131.89:3000](http://34.27.131.89:3000)
+
+## Kubernetes Deployment
+
+### Kubernetes Objects Used
+
+1. **Deployments**: Used for deploying and managing the frontend and backend services.
+2. **Services**: Exposes the frontend and backend pods. The frontend service uses a LoadBalancer to provide an external IP address.
+3. **StatefulSets**: Used for deploying the MongoDB database to ensure stable network identities and persistent storage.
+
+### Method to Expose Pods to Internet Traffic
+
+- The **frontend-service** is exposed using a `LoadBalancer` type service, which provides an external IP address to access the application from outside the Kubernetes cluster.
+
+### Persistent Storage
+
+- The MongoDB database is deployed using StatefulSets to ensure data persistence and stability.
+
+
