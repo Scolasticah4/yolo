@@ -1,3 +1,4 @@
+# backend-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,10 +21,3 @@ spec:
         env:
         - name: MONGODB_URI
           value: "mongodb://mongo:27017/yolomy"
-        volumeMounts:
-        - mountPath: /data
-          name: backend-storage
-      volumes:
-      - name: backend-storage
-        persistentVolumeClaim:
-          claimName: backend-pvc

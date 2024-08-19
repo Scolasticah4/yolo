@@ -16,4 +16,4 @@ spec:
       - name: frontend
         image: scolasticah/yolo_client:latest
         ports:
-        - containerPort: 80
+        - containerPort: 3000
