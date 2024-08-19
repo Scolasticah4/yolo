@@ -59,3 +59,16 @@ The `client` role handles the setup of the client application environment. It in
 ## Summary
 
 The order of execution in the playbook ensures that MongoDB is set up first, providing a reliable database service for the backend. The backend is then configured to interact with MongoDB, followed by the client, which relies on both the backend and database services. Each role uses specific Ansible modules to handle tasks such as package installation, dependency management, configuration, and service management.
+
+
+# Explanation of Kubernetes Implementation
+
+## Implementation Choices
+- **StatefulSets**: Used for MongoDB to ensure stable network identities and persistent storage.
+- **Services**: Exposed frontend and backend pods; frontend service is of type `LoadBalancer`.
+
+## Methods
+- **Deployment**: Utilized Kubernetes Deployments to manage replicas and ensure high availability.
+- **Persistence**: Configured PersistentVolume and PersistentVolumeClaim for MongoDB data storage.
+
+
